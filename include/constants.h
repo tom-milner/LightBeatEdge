@@ -7,7 +7,7 @@
 namespace Constants {
   namespace MQTT {
     namespace Broker {
-      const char *address = "192.168.1.137";
+      const char *address = "raspberrypi.local";
       const unsigned int port = 1883;
     }// namespace Broker
     namespace Topics {
