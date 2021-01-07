@@ -2,11 +2,20 @@
 
 #include "constants.h"
 #include "credentials.h"
-#include <ESP8266WiFi.h>
+
 #include <PubSubClient.h>
+
+
+#if ESP32
+#define LED_BUILTIN 4
+#include <WiFi.h>
+#elif ESP8266
+#include <ESP8266WiFi.h>
+#endif
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
+
 
 // The number of bytes to add to the base id to make the client id unique.
 const char numIDBytes = 4;
@@ -15,42 +24,17 @@ char *mqttClientID;
 char ledState = 0;
 
 
-void setupWiFi() {
-  Serial.println();
-  Serial.println("Connecting to: ");
-  Serial.print("SSID: ");
-  Serial.println(Credentials::WiFi::ssid);
-  Serial.print("Pass: ");
-  Serial.println(Credentials::WiFi::password);
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(Credentials::WiFi::ssid, Credentials::WiFi::password);
-
-  // Wait for connection.
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-
-  WiFi.hostname(mqttClientID);
-  // We are now connected!
-  Serial.println();
-  Serial.println("WiFi Connected.");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-}
-
 // This function is called whenever we receive a message via mqtt.
 void messageCallback(char *topic, byte *payload, unsigned int length) {
-  Serial.print(topic);
-  Serial.print(": ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char) payload[i]);
-  }
+  // Serial.print(topic);
+  // Serial.print(": ");
+  // for (int i = 0; i < length; i++) {
+  // Serial.print((char) payload[i]);
+  // }
   ledState ^= 1;
   digitalWrite(LED_BUILTIN, ledState);
 
-  Serial.println();
+  // Serial.println();
 }
 
 char getAlphaNumberic() {
@@ -76,9 +60,47 @@ void generateClientID() {
 }
 
 
+void setupWiFi() {
+  Serial.println();
+  Serial.println("Connecting to: ");
+  Serial.print("SSID: ");
+  Serial.println(Credentials::WiFi::ssid);
+  Serial.print("Pass: ");
+  Serial.println(Credentials::WiFi::password);
+
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(Credentials::WiFi::ssid, Credentials::WiFi::password);
+
+  // Wait for connection.
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+#if ESP8266
+  WiFi.hostname(mqttClientID);
+#else
+  WiFi.setHostname(mqttClientID);
+  WiFi.setSleep(false);
+#endif
+
+  // We are now connected!
+  Serial.println();
+  Serial.println("WiFi Connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
+
+//  Turn of BLE on esp32 (apparently this decreases WiFi latency).
+#if ESP32
+  btStop();
+  Serial2.begin(115200, SERIAL_8N1, 16, 17);
+#endif
 
   Serial.begin(115200);
   delay(500);
@@ -95,7 +117,6 @@ void setup() {
 
   // Connect to the network.
   setupWiFi();
-
 
   // Initialize MQTT client.
   mqttClient.setServer(Constants::MQTT::Broker::address, Constants::MQTT::Broker::port);
