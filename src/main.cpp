@@ -26,15 +26,15 @@ char ledState = 0;
 
 // This function is called whenever we receive a message via mqtt.
 void messageCallback(char *topic, byte *payload, unsigned int length) {
-  // Serial.print(topic);
-  // Serial.print(": ");
-  // for (int i = 0; i < length; i++) {
-  // Serial.print((char) payload[i]);
-  // }
+   Serial.print(topic);
+   Serial.print(": ");
+   for (int i = 0; i < length; i++) {
+   Serial.print((char) payload[i]);
+   }
   ledState ^= 1;
   digitalWrite(LED_BUILTIN, ledState);
 
-  // Serial.println();
+   Serial.println();
 }
 
 char getAlphaNumberic() {
@@ -139,13 +139,17 @@ void reconnectMQTT() {
       continue;// Early exit.
     }
 
-    // Connection successfull.
+    // Connection successful.
     Serial.println("MQTT connected.");
 
     // Subscribe to the relevant topics.
     mqttClient.subscribe(Constants::MQTT::Topics::beat);
+    mqttClient.loop();
     mqttClient.subscribe(Constants::MQTT::Topics::newMedia);
+    mqttClient.loop();
     mqttClient.subscribe(Constants::MQTT::Topics::mediaFeatures);
+    mqttClient.loop();
+
   }
 }
 
