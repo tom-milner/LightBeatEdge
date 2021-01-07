@@ -2,4 +2,4 @@
 CMakeListsPrivate.txt
 cmake-build-*/ 
 credentials.h
-
+error.txt
