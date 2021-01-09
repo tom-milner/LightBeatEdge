@@ -10,6 +10,7 @@
 class Lights {
   public:
   void flash(int hue, int duration);
+  void setAllHue(int hue);
   void init(int nLeds);
 
   private:

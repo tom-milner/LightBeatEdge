@@ -5,21 +5,24 @@
 #include <Lights.h>
 
 
-Gateway gateway;
+Gateway * gateway;
 Lights lights;
 
 
-// This function is called whenever we receive a message via mqtt.
-void beatHandler(char *topic, byte *payload, unsigned int length) {
+void printMQTT(char * topic, byte* payload, unsigned int length){
   Serial.print(topic);
   Serial.print(": ");
   for (int i = 0; i < length; i++) {
     Serial.print((char) payload[i]);
   }
   Serial.println();
-
-  lights.flash(random(255), 100);
 }
+
+void beatHandler(char *topic, byte *payload, unsigned int length) {
+  printMQTT(topic, payload, length);
+  lights.setAllHue(random(255));
+}
+
 
 void setup() {
 
@@ -40,11 +43,12 @@ void setup() {
   Serial.println("         LightBeatEdge v0.1         ");
   Serial.println("************************************");
 
-  gateway.init(MQTT);
+  gateway = createGateway(MQTT);
+  gateway->init();
   lights.init(300);
 
   // Setup message handlers.
-  gateway.onReceive(Constants::BEAT, beatHandler);
+  gateway->onReceive(BaseConstants::Messages::BEAT, beatHandler);
 
   Serial.println("Setup Complete.");
 }
@@ -53,8 +57,8 @@ void setup() {
 void loop() {
 
   // Make sure we are connected to the MQTT broker.
-  if (!gateway.isConnected()) {
+  if (!gateway->isConnected()) {
     Serial.println("Reconnecting.");
-    gateway.reconnect();
+    gateway->reconnect();
   }
 }

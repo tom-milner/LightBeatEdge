@@ -1,5 +1,5 @@
 .pio
 CMakeListsPrivate.txt
 cmake-build-*/ 
-credentials.h
+lib/gateway/gateways/MQTT/Credentials.h
 error.txt
