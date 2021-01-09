@@ -5,10 +5,11 @@
 #ifndef LIGHTBEATEDGE_MQTTCONSTANTS_H
 #define LIGHTBEATEDGE_MQTTCONSTANTS_H
 
-#include "BaseConstants.h"
+#include "GatewayConstants.h"
 
 namespace MQTTConstants {
   namespace Broker {
+    // TODO: Have these configured dynamically - config file?
     static const char *Address = "192.168.1.137";
     static const unsigned int Port = 1883;
   }// namespace Broker
@@ -16,9 +17,9 @@ namespace MQTTConstants {
 
   // Map the message types to topics.
   static char *Topics[NUM_MESSAGE_TYPES] = {
-          [BaseConstants::Messages::BEAT] = "beat",
-          [BaseConstants::Messages::NEW_MEDIA] = "new-media",
-          [BaseConstants::Messages::MEDIA_FEATURES] = "media-features"};
+          [GatewayConstants::Messages::BEAT] = "beat",
+          [GatewayConstants::Messages::NEW_MEDIA] = "new-media",
+          [GatewayConstants::Messages::MEDIA_FEATURES] = "media-features"};
 
 
 }// namespace MQTTConstants

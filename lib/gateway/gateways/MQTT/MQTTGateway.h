@@ -16,15 +16,15 @@
 #include "Credentials.h"
 #include "MQTTConstants.h"
 
-#include "GatewayInterface.h"
+#include "IGateway.h"
 #include "Utils.h"
 
 
-class MQTTGateway : public Gateway {
+class MQTTGateway : public IGateway {
 
   public:
   void init() override;
-  void onReceive(BaseConstants::Messages::MessageType, void (*handler)(char *topic, byte *payload, unsigned int length)) override;
+  void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(char *topic, byte *payload, unsigned int length)) override;
   void reconnect() override;
   boolean isConnected() override;
 
@@ -40,5 +40,6 @@ class MQTTGateway : public Gateway {
 static void (*handlers[NUM_MESSAGE_TYPES])(char *topic, byte *payload, unsigned int length);
 void doNothing(char *topic, byte *payload, unsigned int length);
 void messageReceiver(char *topic, byte *payload, unsigned int length);
+void printMQTT(char *topic, byte *payload, unsigned int length);
 
 #endif//LIGHTBEATEDGE_MQTTGATEWAY_H

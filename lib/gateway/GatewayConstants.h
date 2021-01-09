@@ -2,13 +2,13 @@
 // Created by Tom Milner on 22/12/2020.
 //
 
-#ifndef LIGHTBEATEDGE_BASECONSTANTS_H
-#define LIGHTBEATEDGE_BASECONSTANTS_H
+#ifndef LIGHTBEATEDGE_GATEWAYCONSTANTS_H
+#define LIGHTBEATEDGE_GATEWAYCONSTANTS_H
 
 
 #define NUM_MESSAGE_TYPES 3
 
-namespace BaseConstants {
+namespace GatewayConstants {
   namespace Messages {
     enum  MessageType {
       BEAT,
@@ -21,4 +21,4 @@ namespace BaseConstants {
 
 }// namespace BaseConstants
 
-#endif//LIGHTBEATEDGE_BASECONSTANTS_H
+#endif//LIGHTBEATEDGE_GATEWAYCONSTANTS_H

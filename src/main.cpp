@@ -5,21 +5,12 @@
 #include <Lights.h>
 
 
-Gateway * gateway;
+IGateway *gateway;
 Lights lights;
 
 
-void printMQTT(char * topic, byte* payload, unsigned int length){
-  Serial.print(topic);
-  Serial.print(": ");
-  for (int i = 0; i < length; i++) {
-    Serial.print((char) payload[i]);
-  }
-  Serial.println();
-}
 
 void beatHandler(char *topic, byte *payload, unsigned int length) {
-  printMQTT(topic, payload, length);
   lights.setAllHue(random(255));
 }
 
@@ -37,18 +28,22 @@ void setup() {
 
   delay(500);
 
-  Serial.println();
-  Serial.println();
+  Serial.println();Serial.println();
   Serial.println("************************************");
   Serial.println("         LightBeatEdge v0.1         ");
   Serial.println("************************************");
 
-  gateway = createGateway(MQTT);
-  gateway->init();
+
+  // Setup the lights.
   lights.init(300);
 
+  // Create gateway.
+  gateway = createGateway(MQTT);
+  gateway->init();
+
   // Setup message handlers.
-  gateway->onReceive(BaseConstants::Messages::BEAT, beatHandler);
+  gateway->onReceive(GatewayConstants::Messages::BEAT, beatHandler);
+
 
   Serial.println("Setup Complete.");
 }

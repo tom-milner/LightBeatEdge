@@ -6,10 +6,10 @@
 #define LIGHTBEATEDGE_GATEWAY_H
 
 
-#include "GatewayInterface.h"
+#include "IGateway.h"
 #include "gateways/MQTT/MQTTGateway.h"
 
-Gateway * createGateway(GatewayType type){
+IGateway * createGateway(GatewayType type){
   switch (type){
     case MQTT:
       return new MQTTGateway();

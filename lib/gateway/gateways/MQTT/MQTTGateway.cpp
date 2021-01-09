@@ -13,12 +13,12 @@ void MQTTGateway::init() {
 
 // Generate a unique identifier for this device.
 char *MQTTGateway::generateEdgeID() {
-  const int baseIDLength = strlen(BaseConstants::EdgeIDBase);
+  const int baseIDLength = strlen(GatewayConstants::EdgeIDBase);
   const char numIDBytes = 4;// The number of bytes to add to the base id to make the client id unique.
 
   char *edgeID = (char *) malloc(baseIDLength + numIDBytes + 1);// +1 for \0
   memset(edgeID, '\0', baseIDLength + numIDBytes + 1);
-  strcpy(edgeID, BaseConstants::EdgeIDBase);
+  strcpy(edgeID, GatewayConstants::EdgeIDBase);
 
   // Add the random bytes to the id string.
   for (int i = 0; i < numIDBytes; i++) {
@@ -78,7 +78,7 @@ void MQTTGateway::setupWifi(char *hostname) {
 }
 
 // Specify what function should be run when the given message type is received.
-void MQTTGateway::onReceive(BaseConstants::Messages::MessageType messageType, void (*handler)(char *topic, byte *payload, unsigned int length)) {
+void MQTTGateway::onReceive(GatewayConstants::Messages::MessageType messageType, void (*handler)(char *topic, byte *payload, unsigned int length)) {
   // Override the default handler with the supplied handler.
   handlers[messageType] = handler;
 }
@@ -122,6 +122,8 @@ boolean MQTTGateway::isConnected() {
 
 // Call the relevant handler for the given topic.
 void messageReceiver(char *topic, byte *payload, unsigned int length) {
+
+printMQTT(topic, payload, length);
   for (int i = 0; i < NUM_MESSAGE_TYPES; i++) {
     if (strcmp(topic, MQTTConstants::Topics[i]) == 0) {
       (handlers[i])(topic, payload, length);
@@ -132,3 +134,12 @@ void messageReceiver(char *topic, byte *payload, unsigned int length) {
 
 // The default handler function. Does what it says on the tin!
 void doNothing(char *topic, byte *payload, unsigned int length) {}
+
+void printMQTT(char *topic, byte *payload, unsigned int length) {
+  Serial.print(topic);
+  Serial.print(": ");
+  for (int i = 0; i < length; i++) {
+    Serial.print((char) payload[i]);
+  }
+  Serial.println();
+}
