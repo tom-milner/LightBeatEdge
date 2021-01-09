@@ -11,11 +11,14 @@ class Lights {
   public:
   void flash(int hue, int duration);
   void setAllHue(int hue);
+  void fadeByHueDelta(int hueDelta, int duration);
   void init(int nLeds);
 
   private:
   int numLeds;
   CRGB *leds;
+  volatile int currentHue;
+  int ringAdd(int a, int b, int max);
 };
 
 

@@ -3,17 +3,33 @@
 #include <Arduino.h>
 #include <Gateway.h>
 #include <Lights.h>
-
+#include <ArduinoJson.h>
 
 IGateway *gateway;
 Lights lights;
 
 
-
 void beatHandler(char *topic, byte *payload, unsigned int length) {
-  lights.setAllHue(random(255));
+  StaticJsonDocument<40> doc;
+  DeserializationError error = deserializeJson(doc, payload);
+  if (error) {
+    Serial.println(error.c_str());
+    error.code();
+  }
+  int duration = doc["duration"].as<int>();
+//  int number = doc["number"].as<int>();
+
+  lights.fadeByHueDelta(32, duration/2);
 }
 
+
+void printBanner() {
+  Serial.println();
+  Serial.println();
+  Serial.println("************************************");
+  Serial.println("         LightBeatEdge v0.1         ");
+  Serial.println("************************************");
+}
 
 void setup() {
 
@@ -28,11 +44,7 @@ void setup() {
 
   delay(500);
 
-  Serial.println();Serial.println();
-  Serial.println("************************************");
-  Serial.println("         LightBeatEdge v0.1         ");
-  Serial.println("************************************");
-
+  printBanner();
 
   // Setup the lights.
   lights.init(300);
