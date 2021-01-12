@@ -55,6 +55,16 @@ void MQTTGateway::setupWifi(char *hostname) {
   Serial.println(Credentials::WiFi::password);
 
   WiFi.mode(WIFI_STA);
+
+#if ESP32
+  WiFi.disconnect();
+  // This line is required to get setHostname working properly.
+  // WiFi.config(IPADDR_NONE, IPADDR_NONE, IPADDR_NONE, IPADDR_NONE);
+  WiFi.setHostname(hostname);
+  WiFi.setSleep(false);
+#endif
+
+
   WiFi.begin(Credentials::WiFi::ssid, Credentials::WiFi::password);
 
   // Wait for connection.
@@ -65,16 +75,15 @@ void MQTTGateway::setupWifi(char *hostname) {
 
 #if ESP8266
   WiFi.hostname(hostname);
-#else
-  WiFi.setHostname(hostname);
-  WiFi.setSleep(false);
 #endif
-
+  delay(150);
   // We are now connected!
   Serial.println();
   Serial.println("WiFi Connected.");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  Serial.print("Hostname: ");
+  Serial.println(WiFi.getHostname());
 }
 
 // Specify what function should be run when the given message type is received.
@@ -123,7 +132,7 @@ boolean MQTTGateway::isConnected() {
 // Call the relevant handler for the given topic.
 void messageReceiver(char *topic, byte *payload, unsigned int length) {
 
-printMQTT(topic, payload, length);
+  printMQTT(topic, payload, length);
   for (int i = 0; i < NUM_MESSAGE_TYPES; i++) {
     if (strcmp(topic, MQTTConstants::Topics[i]) == 0) {
       (handlers[i])(topic, payload, length);

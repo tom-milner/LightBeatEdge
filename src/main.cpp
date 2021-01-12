@@ -1,9 +1,9 @@
 
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
 #include <Gateway.h>
 #include <Lights.h>
-#include <ArduinoJson.h>
 
 IGateway *gateway;
 Lights lights;
@@ -17,9 +17,9 @@ void beatHandler(char *topic, byte *payload, unsigned int length) {
     error.code();
   }
   int duration = doc["duration"].as<int>();
-//  int number = doc["number"].as<int>();
+  //  int number = doc["number"].as<int>();
 
-  lights.fadeByHueDelta(32, duration/2);
+  lights.fadeByHueDelta(32, duration / 2);
 }
 
 
@@ -54,7 +54,7 @@ void setup() {
   gateway->init();
 
   // Setup message handlers.
-  gateway->onReceive(GatewayConstants::Messages::BEAT, beatHandler);
+  gateway->onReceive(GatewayConstants::Messages::TRIGGER, beatHandler);
 
 
   Serial.println("Setup Complete.");

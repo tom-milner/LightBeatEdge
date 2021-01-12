@@ -10,8 +10,8 @@
 
 namespace GatewayConstants {
   namespace Messages {
-    enum  MessageType {
-      BEAT,
+    enum MessageType {
+      TRIGGER,
       NEW_MEDIA,
       MEDIA_FEATURES
     };
@@ -19,6 +19,6 @@ namespace GatewayConstants {
   // This is altered upon setup to make it unique.
   static const char *EdgeIDBase = "LightBeatEdge-";
 
-}// namespace BaseConstants
+}// namespace GatewayConstants
 
 #endif//LIGHTBEATEDGE_GATEWAYCONSTANTS_H

@@ -6,7 +6,6 @@
 #define LIGHTBEATEDGE_MQTTCONSTANTS_H
 
 #include "GatewayConstants.h"
-
 namespace MQTTConstants {
   namespace Broker {
     // TODO: Have these configured dynamically
@@ -19,7 +18,7 @@ namespace MQTTConstants {
 
   // Map the message types to topics.
   static char *Topics[NUM_MESSAGE_TYPES] = {
-          [GatewayConstants::Messages::BEAT] = "beat",
+          [GatewayConstants::Messages::TRIGGER] = "trigger",
           [GatewayConstants::Messages::NEW_MEDIA] = "new-media",
           [GatewayConstants::Messages::MEDIA_FEATURES] = "media-features"};
 
