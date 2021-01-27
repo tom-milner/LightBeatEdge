@@ -11,7 +11,7 @@ namespace MQTTConstants {
     // TODO: Have these configured dynamically
     //  - config file?
     //  - void pointer to config struct.
-    static const char *Address = "192.168.1.137";
+    static const char *Address = "192.168.1.131";
     static const unsigned int Port = 1883;
   }// namespace Broker
 
@@ -20,7 +20,9 @@ namespace MQTTConstants {
   static char *Topics[NUM_MESSAGE_TYPES] = {
           [GatewayConstants::Messages::TRIGGER] = "trigger",
           [GatewayConstants::Messages::NEW_MEDIA] = "new-media",
-          [GatewayConstants::Messages::MEDIA_FEATURES] = "media-features"};
+          [GatewayConstants::Messages::MEDIA_FEATURES] = "media-features",
+          [GatewayConstants::Messages::NEW_DEVICE] = "new-device"
+  };
 
 
 }// namespace MQTTConstants

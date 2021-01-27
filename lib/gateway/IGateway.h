@@ -15,7 +15,7 @@ enum GatewayType {
 class IGateway {
   public:
   virtual void init() = 0;
-  virtual void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(char *topic, byte *payload, unsigned int length)) = 0;
+  virtual void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(byte *payload, unsigned int length)) = 0;
   virtual void reconnect() = 0;
   virtual boolean isConnected() = 0;
   virtual ~IGateway() = default;

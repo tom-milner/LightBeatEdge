@@ -8,21 +8,38 @@
 IGateway *gateway;
 Lights lights;
 
-
-void beatHandler(char *topic, byte *payload, unsigned int length) {
+// The function to handle any incoming trigger messages.
+void triggerHandler(byte *payload, unsigned int length) {
   StaticJsonDocument<40> doc;
   DeserializationError error = deserializeJson(doc, payload);
   if (error) {
     Serial.println(error.c_str());
-    error.code();
   }
   int duration = doc["duration"].as<int>();
   //  int number = doc["number"].as<int>();
 
-  lights.fadeByHueDelta(32, duration / 2);
+  lights.fadeByHueDelta(32, duration / 4);
 }
 
+// The function to handle any incoming media-features messages.
+void mediaFeaturesHandler( byte * payload, unsigned int length){
+  StaticJsonDocument<JSON_OBJECT_SIZE(9)> doc;
+  DeserializationError error = deserializeJson(doc, payload);
+  if(error){
+    Serial.println(error.c_str());
+  }
+//  float valence = doc["valence"].as<float>();
+  float energy = doc["energy"].as<float>();
+  float tempo = doc["tempo"].as<float>();
 
+  int newHue = lights.ringAdd(energy * 255, -85, 255);
+
+  Serial.print("New Hue: ");
+  Serial.println(newHue);
+  lights.fadeToHue(newHue, 100);
+}
+
+// Print the application banner to serial.
 void printBanner() {
   Serial.println();
   Serial.println();
@@ -31,8 +48,8 @@ void printBanner() {
   Serial.println("************************************");
 }
 
-void setup() {
 
+void setup() {
 
 //  Turn off BLE on esp32 (apparently this decreases WiFi latency).
 #if ESP32
@@ -41,7 +58,6 @@ void setup() {
 #endif
 
   Serial.begin(115200);
-
   delay(500);
 
   printBanner();
@@ -54,8 +70,8 @@ void setup() {
   gateway->init();
 
   // Setup message handlers.
-  gateway->onReceive(GatewayConstants::Messages::TRIGGER, beatHandler);
-
+  gateway->onReceive(GatewayConstants::Messages::TRIGGER, triggerHandler);
+  gateway->onReceive(GatewayConstants::Messages::MEDIA_FEATURES, mediaFeaturesHandler);
 
   Serial.println("Setup Complete.");
 }

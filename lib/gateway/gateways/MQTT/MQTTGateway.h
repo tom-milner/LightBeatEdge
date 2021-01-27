@@ -24,7 +24,7 @@ class MQTTGateway : public IGateway {
 
   public:
   void init() override;
-  void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(char *topic, byte *payload, unsigned int length)) override;
+  void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(byte *payload, unsigned int length)) override;
   void reconnect() override;
   boolean isConnected() override;
 
@@ -37,8 +37,8 @@ class MQTTGateway : public IGateway {
   PubSubClient mqttClient;
   char *edgeID;
 };
-static void (*handlers[NUM_MESSAGE_TYPES])(char *topic, byte *payload, unsigned int length);
-void doNothing(char *topic, byte *payload, unsigned int length);
+static void (*handlers[NUM_MESSAGE_TYPES])(byte *payload, unsigned int length);
+void doNothing( byte *payload, unsigned int length);
 void messageReceiver(char *topic, byte *payload, unsigned int length);
 void printMQTT(char *topic, byte *payload, unsigned int length);
 

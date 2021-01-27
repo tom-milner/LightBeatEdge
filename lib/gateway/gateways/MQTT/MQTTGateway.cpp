@@ -7,6 +7,8 @@
 // Initialise the gateway connection.
 void MQTTGateway::init() {
   edgeID = generateEdgeID();
+
+  // Setup communication.
   setupWifi(edgeID);
   setupMQTT();
 }
@@ -87,7 +89,7 @@ void MQTTGateway::setupWifi(char *hostname) {
 }
 
 // Specify what function should be run when the given message type is received.
-void MQTTGateway::onReceive(GatewayConstants::Messages::MessageType messageType, void (*handler)(char *topic, byte *payload, unsigned int length)) {
+void MQTTGateway::onReceive(GatewayConstants::Messages::MessageType messageType, void (*handler)( byte *payload, unsigned int length)) {
   // Override the default handler with the supplied handler.
   handlers[messageType] = handler;
 }
@@ -111,13 +113,17 @@ void MQTTGateway::reconnect() {
     // Connection successful.
     Serial.println("MQTT connected.");
 
-    // Subscribe to all the topics.
+    // Subscribe to the relevant topics.
     for (int i = 0; i < NUM_MESSAGE_TYPES; i++) {
+      if(i == GatewayConstants::Messages::NEW_DEVICE) continue; // We don't need to subscribe to this one.
       Serial.print(mqttClient.subscribe(MQTTConstants::Topics[i]));
       mqttClient.loop();
       Serial.print(" - Subscribed to ");
       Serial.println(MQTTConstants::Topics[i]);
     }
+
+    // Let the gateway know a new device has joined.
+    mqttClient.publish(MQTTConstants::Topics[GatewayConstants::Messages::NEW_DEVICE], edgeID);
   }
   mqttClient.loop();
 }
@@ -135,14 +141,14 @@ void messageReceiver(char *topic, byte *payload, unsigned int length) {
   printMQTT(topic, payload, length);
   for (int i = 0; i < NUM_MESSAGE_TYPES; i++) {
     if (strcmp(topic, MQTTConstants::Topics[i]) == 0) {
-      (handlers[i])(topic, payload, length);
+      (handlers[i])(payload, length);
       return;
     }
   }
 }
 
 // The default handler function. Does what it says on the tin!
-void doNothing(char *topic, byte *payload, unsigned int length) {}
+void doNothing(byte *payload, unsigned int length) {}
 
 void printMQTT(char *topic, byte *payload, unsigned int length) {
   Serial.print(topic);

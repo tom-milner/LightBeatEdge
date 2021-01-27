@@ -6,14 +6,15 @@
 #define LIGHTBEATEDGE_GATEWAYCONSTANTS_H
 
 
-#define NUM_MESSAGE_TYPES 3
+#define NUM_MESSAGE_TYPES 4
 
 namespace GatewayConstants {
   namespace Messages {
     enum MessageType {
       TRIGGER,
       NEW_MEDIA,
-      MEDIA_FEATURES
+      MEDIA_FEATURES,
+      NEW_DEVICE
     };
   }
   // This is altered upon setup to make it unique.
