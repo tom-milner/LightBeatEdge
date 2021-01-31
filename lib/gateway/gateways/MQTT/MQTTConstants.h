@@ -7,15 +7,6 @@
 
 #include "GatewayConstants.h"
 namespace MQTTConstants {
-  namespace Broker {
-    // TODO: Have these configured dynamically
-    //  - config file?
-    //  - void pointer to config struct.
-    static const char *Address = "192.168.1.131";
-    static const unsigned int Port = 1883;
-  }// namespace Broker
-
-
   // Map the message types to topics.
   static char *Topics[NUM_MESSAGE_TYPES] = {
           [GatewayConstants::Messages::TRIGGER] = "trigger",

@@ -13,9 +13,8 @@
 #include <ESP8266WiFi.h>
 #endif
 
-#include "Credentials.h"
 #include "MQTTConstants.h"
-
+#include "MQTTConfig.h"
 #include "IGateway.h"
 #include "Utils.h"
 
@@ -23,7 +22,7 @@
 class MQTTGateway : public IGateway {
 
   public:
-  void init() override;
+  void init(void * config) override;
   void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(byte *payload, unsigned int length)) override;
   void reconnect() override;
   boolean isConnected() override;
@@ -36,6 +35,7 @@ class MQTTGateway : public IGateway {
   WiFiClient wifiClient;
   PubSubClient mqttClient;
   char *edgeID;
+  MQTTConfig * mqttConfig;
 };
 static void (*handlers[NUM_MESSAGE_TYPES])(byte *payload, unsigned int length);
 void doNothing( byte *payload, unsigned int length);

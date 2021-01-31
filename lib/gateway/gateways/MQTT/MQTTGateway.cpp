@@ -5,7 +5,10 @@
 #include "MQTTGateway.h"
 
 // Initialise the gateway connection.
-void MQTTGateway::init() {
+void MQTTGateway::init(void *config) {
+  // Attempt to parse the config object.
+  mqttConfig = (MQTTConfig *) config;
+
   edgeID = generateEdgeID();
 
   // Setup communication.
@@ -35,7 +38,7 @@ char *MQTTGateway::generateEdgeID() {
 void MQTTGateway::setupMQTT() {
   Serial.println("Setting up MQTT...");
   mqttClient.setClient(wifiClient);
-  mqttClient.setServer(MQTTConstants::Broker::Address, MQTTConstants::Broker::Port);
+  mqttClient.setServer(mqttConfig->Broker.Address, mqttConfig->Broker.Port);
   Serial.println(" - Server set.");
   mqttClient.setCallback(messageReceiver);
   Serial.println(" - Callback set.");
@@ -52,9 +55,9 @@ void MQTTGateway::setupWifi(char *hostname) {
   Serial.println();
   Serial.println("Connecting to: ");
   Serial.print("SSID: ");
-  Serial.println(Credentials::WiFi::ssid);
+  Serial.println(mqttConfig->Wifi.SSID);
   Serial.print("Pass: ");
-  Serial.println(Credentials::WiFi::password);
+  Serial.println(mqttConfig->Wifi.Password);
 
   WiFi.mode(WIFI_STA);
 
@@ -67,7 +70,7 @@ void MQTTGateway::setupWifi(char *hostname) {
 #endif
 
 
-  WiFi.begin(Credentials::WiFi::ssid, Credentials::WiFi::password);
+  WiFi.begin(mqttConfig->Wifi.SSID, mqttConfig->Wifi.Password);
 
   // Wait for connection.
   while (WiFi.status() != WL_CONNECTED) {
@@ -89,8 +92,8 @@ void MQTTGateway::setupWifi(char *hostname) {
 }
 
 // Specify what function should be run when the given message type is received.
-void MQTTGateway::onReceive(GatewayConstants::Messages::MessageType messageType, void (*handler)( byte *payload, unsigned int length)) {
-  // Override the default handler with the supplied handler.
+void MQTTGateway::onReceive(GatewayConstants::Messages::MessageType messageType, void (*handler)(byte *payload, unsigned int length)) {
+  // Override the default handler with the supplied handlers.
   handlers[messageType] = handler;
 }
 
@@ -115,7 +118,7 @@ void MQTTGateway::reconnect() {
 
     // Subscribe to the relevant topics.
     for (int i = 0; i < NUM_MESSAGE_TYPES; i++) {
-      if(i == GatewayConstants::Messages::NEW_DEVICE) continue; // We don't need to subscribe to this one.
+      if (i == GatewayConstants::Messages::NEW_DEVICE) continue;// We don't need to subscribe to this one.
       Serial.print(mqttClient.subscribe(MQTTConstants::Topics[i]));
       mqttClient.loop();
       Serial.print(" - Subscribed to ");

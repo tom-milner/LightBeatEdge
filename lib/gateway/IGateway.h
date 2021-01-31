@@ -12,9 +12,10 @@ enum GatewayType {
   MQTT
 };
 
+
 class IGateway {
   public:
-  virtual void init() = 0;
+  virtual void init(void * config) = 0;
   virtual void onReceive(GatewayConstants::Messages::MessageType, void (*handler)(byte *payload, unsigned int length)) = 0;
   virtual void reconnect() = 0;
   virtual boolean isConnected() = 0;

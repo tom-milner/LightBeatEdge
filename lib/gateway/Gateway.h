@@ -6,8 +6,11 @@
 #define LIGHTBEATEDGE_GATEWAY_H
 
 
+// This is the access point to each gateway type.
+
 #include "IGateway.h"
 #include "gateways/MQTT/MQTTGateway.h"
+
 
 IGateway * createGateway(GatewayType type){
   switch (type){

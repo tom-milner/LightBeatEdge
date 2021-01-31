@@ -5,8 +5,12 @@
 #include <Gateway.h>
 #include <Lights.h>
 
+#include "Config.h"
+
 IGateway *gateway;
 Lights lights;
+
+MQTTConfig config;
 
 // The function to handle any incoming trigger messages.
 void triggerHandler(byte *payload, unsigned int length) {
@@ -54,20 +58,30 @@ void setup() {
 //  Turn off BLE on esp32 (apparently this decreases WiFi latency).
 #if ESP32
   btStop();
-  Serial2.begin(115200, SERIAL_8N1, 16, 17);
+  Serial2.begin(115200, SERIAL_8N1, 16, 17); // Make serial accessible via pin 16 & 17
 #endif
 
   Serial.begin(115200);
   delay(500);
-
   printBanner();
+
+  // Move the config options into a struct usable by the gateway.
+  BrokerInfo broker;
+  broker.Address = Config::Broker::Address;
+  broker.Port = Config::Broker::Port;
+  WifiInfo wifi;
+  wifi.SSID = Config::WiFi::SSID;
+  wifi.Password = Config::WiFi::Password;
+  config.Wifi = wifi;
+  config.Broker = broker;
+
 
   // Setup the lights.
   lights.init(300);
 
   // Create gateway.
   gateway = createGateway(MQTT);
-  gateway->init();
+  gateway->init((void *) &config); // Config object must be passed to void to keep interface consistent across gateway types.
 
   // Setup message handlers.
   gateway->onReceive(GatewayConstants::Messages::TRIGGER, triggerHandler);
